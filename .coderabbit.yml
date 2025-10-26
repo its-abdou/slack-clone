@@ -27,4 +27,4 @@ rules:
 comments:
   summarize: true
   label: "code-review"
-  approval_comment: "✅ CodeRabbit approved this PR after review."
+  approval_comment: "✅ CodeRabbit approved this PR after review!"
