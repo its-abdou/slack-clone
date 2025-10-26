@@ -1,0 +1,32 @@
+name: CI - Build and Test
+
+on:
+  pull_request:
+  push:
+    branches: [develop, feature/**]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Backend - Install & Lint
+        run: |
+          cd backend
+          npm install 
+          npm run lint || true
+          npm run test
+
+      - name: Frontend - Build
+        run: |
+          cd frontend
+          npm install
+          npm run build
