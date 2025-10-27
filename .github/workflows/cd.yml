@@ -1,8 +1,9 @@
 name: CD - Deploy to Google Cloud Run
 
 on:
+  pull_request:
   push:
-    branches: [main, master]
+    branches: [main]
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
