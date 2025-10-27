@@ -1,4 +1,4 @@
-// Initialize Sentry FIRST, before any other imports
+import express from "express";
 import * as Sentry from "@sentry/node";
 
 // Conditionally load dotenv only in development
@@ -6,10 +6,8 @@ if (process.env.NODE_ENV !== "production") {
   await import("dotenv/config");
 }
 
-// Import ENV after dotenv is loaded
 import { ENV } from "./config/env.js";
 
-// Initialize Sentry with error handling
 if (ENV.SENTRY_DSN) {
   try {
     Sentry.init({
@@ -25,7 +23,6 @@ if (ENV.SENTRY_DSN) {
   }
 }
 
-import express from "express";
 import { connectDB } from "./config/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import { functions, inngest } from "./config/inngest.js";
@@ -35,16 +32,20 @@ import cors from "cors";
 
 const app = express();
 
-app.use(express.json());
+// CORS must be BEFORE other middleware
 app.use(
   cors({
-    origin: [ENV.CLIENT_URL],
+    origin: ENV.CLIENT_URL,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
+// Handle preflight requests
+app.options("*", cors());
+
+app.use(express.json());
 app.use(clerkMiddleware());
 
 app.get("/debug-sentry", (req, res) => {
@@ -68,6 +69,7 @@ const startServer = async () => {
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server listening on port ${PORT}`);
+      console.log(`CLIENT_URL: ${ENV.CLIENT_URL}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error.message);
