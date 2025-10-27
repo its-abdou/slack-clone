@@ -43,14 +43,20 @@ jobs:
       - name: Deploy Backend to Cloud Run
         run: |
           gcloud run deploy backend \
-            --image ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/docker-repo/backend:${{ github.sha }} \
-            --platform managed \
+          --image ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/docker-repo/backend:${{ github.sha }} \
+          --platform managed \
+          --region ${{ env.REGION }} \
+          --allow-unauthenticated \
+          --timeout 600 \
+          --set-env-vars="MONGO_URI=${{ secrets.MONGO_URI }},NODE_ENV=production,CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }},CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }},STREAM_API_KEY=${{ secrets.STREAM_API_KEY }},STREAM_API_SECRET=${{ secrets.STREAM_API_SECRET }},SENTRY_DSN=${{ secrets.SENTRY_DSN }},INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }},INNGEST_SIGNING_KEY=${{ secrets.INNGEST_SIGNING_KEY }},CLIENT_URL=${{ secrets.CLIENT_URL }}"
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "🔍 Fetching Cloud Run logs..."
+          gcloud run services logs read backend \
             --region ${{ env.REGION }} \
-            --allow-unauthenticated \
-            --port 5001 \
-            --timeout 300 \
-            --set-env-vars="MONGO_URI=${{ secrets.MONGO_URI }},NODE_ENV=production,CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }},CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }},STREAM_API_KEY=${{ secrets.STREAM_API_KEY }},STREAM_API_SECRET=${{ secrets.STREAM_API_SECRET }},SENTRY_DSN=${{ secrets.SENTRY_DSN }},INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }},INNGEST_SIGNING_KEY=${{ secrets.INNGEST_SIGNING_KEY }},CLIENT_URL=${{ secrets.CLIENT_URL }}"
-
+            --limit 100
+            
       - name: Get Backend URL
         id: backend-url
         run: |

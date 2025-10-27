@@ -40,6 +40,7 @@ Sentry.setupExpressErrorHandler(app);
 
 const startServer = async () => {
   try {
+    console.log("Connecting to MongoDB...");
     await connectDB();
     
     // Always start the server, both in development and production
