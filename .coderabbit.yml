@@ -1,0 +1,30 @@
+# .coderabbit.yml
+version: 1
+review:
+  enabled: true
+  auto_review: true
+
+pull_request:
+  branches:
+    - main
+    - develop
+    - staging
+    - "feature/*"
+
+rules:
+  - name: "Code Quality"
+    patterns:
+      - "**/*.js"
+      - "**/*.jsx"
+      - "**/*.ts"
+      - "**/*.tsx"
+    reviewers:
+      - name: "CodeRabbit"
+    checks:
+      eslint: true
+      prettier: true
+
+comments:
+  summarize: true
+  label: "code-review"
+  approval_comment: "✅ CodeRabbit approved this PR after review!"
