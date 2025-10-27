@@ -73,7 +73,7 @@ const startServer = async () => {
       ENV.MONGO_URI?.substring(0, 20) + "..."
     );
 
-    await connectDB();
+    //await connectDB();
     console.log("✅ MongoDB connected successfully");
 
     app.listen(PORT, "0.0.0.0", () => {
